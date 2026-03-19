@@ -304,6 +304,8 @@ function updateUIWithResults(results) {
     perPersonBeerServerExpense,
     perPersonFoodExpense,
     dynamicSectionTotals,
+    totalTentTickets,
+    totalParkingTickets,
   } = results;
 
   if (calculationResults) {
@@ -323,6 +325,20 @@ function updateUIWithResults(results) {
         );
       }
     }
+  }
+
+  const totalTentTicketsElement = document.getElementById(
+    'total-tent-tickets'
+  );
+  const totalParkingTicketsElement = document.getElementById(
+    'total-parking-tickets'
+  );
+
+  if (totalTentTicketsElement) {
+    totalTentTicketsElement.textContent = totalTentTickets || 0;
+  }
+  if (totalParkingTicketsElement) {
+    totalParkingTicketsElement.textContent = totalParkingTickets || 0;
   }
 
   updateStandardTableUI(
