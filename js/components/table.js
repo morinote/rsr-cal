@@ -334,7 +334,7 @@ function updateUIWithResults(results) {
         valueRow.querySelector(`.${CLASSES.TOTAL_PAYMENT}`).textContent =
           formatNumberWithCommas(result.totalPayment);
         valueRow.querySelector(`.${CLASSES.PER_PERSON_PAYMENT}`).textContent =
-          formatNumberWithCommas(Math.round(perPersonExpense));
+          formatNumberWithCommas(perPersonExpense, 2);
         updateBalanceCell(
           valueRow.querySelector(`.${CLASSES.BALANCE}`),
           result.balance
@@ -414,7 +414,8 @@ function updateStandardTableUI(
       const perPersonCell = row.querySelector(`.${CLASSES.PER_PERSON_PAYMENT}`);
       if (perPersonCell)
         perPersonCell.textContent = formatNumberWithCommas(
-          Math.round(perPerson || 0)
+          perPerson || 0,
+          2
         );
 
       const balanceCell = row.querySelector(`.${CLASSES.BALANCE}`);
@@ -472,7 +473,7 @@ function updateSummaryTable(results) {
           cellsHtml += `<td>${updateBalanceCell(null, result[`${sec.name}_balance`], true)}</td>`;
         });
       }
-      cellsHtml += `<td>${updateBalanceCell(null, result.totalBalance, true)}</td>`;
+      cellsHtml += `<td>${updateBalanceCell(null, result.totalBalance, true, true)}</td>`;
       row.innerHTML = cellsHtml;
     }
   }
@@ -490,19 +491,33 @@ function updateSummaryTable(results) {
   updatePaymentSummaryLists(calculationResults);
 }
 
-function updateBalanceCell(cell, balanceValue, returnHtml = false) {
-  const roundedBalance = Math.round(balanceValue || 0);
+function updateBalanceCell(cell, balanceValue, returnHtml = false, isFinal = false) {
+  const balance = Number(balanceValue || 0);
   let text,
     className = CLASSES.BALANCE;
 
-  if (roundedBalance > 0) {
-    text = `貰う: ${formatNumberWithCommas(roundedBalance)}`;
+  if (balance > 0.005) {
+    let displayValue = balance;
+    if (isFinal) {
+      // 最終収支のみ：小数を切り上げ、さらに1の位が1-9なら10円単位に繰り上げ
+      displayValue = Math.ceil(Math.ceil(displayValue) / 10) * 10;
+      text = `貰う: ${formatNumberWithCommas(displayValue, 0)}`; // 整数表示
+    } else {
+      text = `貰う: ${formatNumberWithCommas(displayValue, 2)}`;
+    }
     className += ` ${CLASSES.BALANCE_POSITIVE}`;
-  } else if (roundedBalance < 0) {
-    text = `払う: ${formatNumberWithCommas(Math.abs(roundedBalance))}`;
+  } else if (balance < -0.005) {
+    let displayValue = Math.abs(balance);
+    if (isFinal) {
+      // 最終収支のみ：小数を切り上げ、さらに1の位が1-9なら10円単位に繰り上げ
+      displayValue = Math.ceil(Math.ceil(displayValue) / 10) * 10;
+      text = `払う: ${formatNumberWithCommas(displayValue, 0)}`; // 整数表示
+    } else {
+      text = `払う: ${formatNumberWithCommas(displayValue, 2)}`;
+    }
     className += ` ${CLASSES.BALANCE_NEGATIVE}`;
   } else {
-    text = '0';
+    text = isFinal ? '0' : '0.00';
   }
 
   if (returnHtml) return `<span class="${className}">${text}</span>`;
@@ -527,12 +542,16 @@ function updatePaymentSummaryLists(calculationResults) {
 
   for (const participant in calculationResults) {
     const result = calculationResults[participant];
-    const balance = Math.round(result.totalBalance || 0);
+    const balance = Number(result.totalBalance || 0);
 
-    if (balance < 0) {
-      payers.push({ name: participant, amount: Math.abs(balance) });
-    } else if (balance > 0) {
-      receivers.push({ name: participant, amount: balance });
+    if (balance < -0.005) {
+      // 最終収支と同じ繰り上げを適用
+      const amount = Math.ceil(Math.ceil(Math.abs(balance)) / 10) * 10;
+      payers.push({ name: participant, amount: amount });
+    } else if (balance > 0.005) {
+      // 最終収支と同じ繰り上げを適用
+      const amount = Math.ceil(Math.ceil(balance) / 10) * 10;
+      receivers.push({ name: participant, amount: amount });
     }
   }
 
@@ -546,7 +565,7 @@ function updatePaymentSummaryLists(calculationResults) {
   if (payers.length > 0) {
     html += '<ul>';
     payers.forEach(p => {
-      html += `<li><span class="participant-name">${p.name}</span> <span class="balance--negative">${formatNumberWithCommas(p.amount)}円</span></li>`;
+      html += `<li><span class="participant-name">${p.name}</span> <span class="balance--negative">${formatNumberWithCommas(p.amount, 0)}円</span></li>`;
     });
     html += '</ul>';
   } else {
@@ -559,7 +578,7 @@ function updatePaymentSummaryLists(calculationResults) {
   if (receivers.length > 0) {
     html += '<ul>';
     receivers.forEach(p => {
-      html += `<li><span class="participant-name">${p.name}</span> <span class="balance--positive">${formatNumberWithCommas(p.amount)}円</span></li>`;
+      html += `<li><span class="participant-name">${p.name}</span> <span class="balance--positive">${formatNumberWithCommas(p.amount, 0)}円</span></li>`;
     });
     html += '</ul>';
   } else {
