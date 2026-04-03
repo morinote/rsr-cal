@@ -24,7 +24,6 @@ export const SUFFIX_FEE = '料金';
 
 export const IDS = {
   // Containers
-  PRICING_TABLE_CONTAINER: 'pricing-table-container',
   CALCULATION_TABLE_CONTAINER: 'calculation-table-container',
   BEER_SERVER_TABLE_CONTAINER: 'beer-server-table-container',
   FOOD_TABLE_CONTAINER: 'food-table-container',

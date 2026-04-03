@@ -33,18 +33,25 @@ function updateParticipantCount(section, count) {
 // --- Table Creation (Initial Setup) ---
 
 export function initializeTables() {
-  const pricingTableContainer = document.getElementById(
-    IDS.PRICING_TABLE_CONTAINER
-  );
-  if (pricingTableContainer)
-    pricingTableContainer.appendChild(createPricingTableElement());
+  const pricingTable = document.getElementById(IDS.PRICING_TABLE);
+  if (pricingTable) {
+    setupPricingDisplay(pricingTable);
+  }
 
   const calculationTableContainer = document.getElementById(
     IDS.CALCULATION_TABLE_CONTAINER
   );
   if (calculationTableContainer)
     calculationTableContainer.appendChild(
-      createGenericTableElement(IDS.CALCULATION_TABLE, [])
+      createGenericTableElement(IDS.CALCULATION_TABLE, [
+        HEADER_PARTICIPANT,
+        TICKET_TYPE_TENT,
+        TICKET_TYPE_PARKING,
+        PARTICIPANT_FEE,
+        HEADER_TOTAL_PAYMENT,
+        HEADER_PER_PERSON,
+        HEADER_BALANCE,
+      ])
     );
 
   const beerServerTableContainer = document.getElementById(
@@ -72,19 +79,28 @@ export function initializeTables() {
         HEADER_BALANCE,
       ])
     );
+
+  const summaryTableContainer = document.getElementById(
+    IDS.SUMMARY_TABLE_CONTAINER
+  );
+  if (summaryTableContainer)
+    summaryTableContainer.appendChild(
+      createGenericTableElement(IDS.SUMMARY_TABLE, [])
+    );
 }
 
-function createPricingTableElement() {
-  const table = document.createElement('table');
-  table.id = IDS.PRICING_TABLE;
-  table.className = 'data-table';
-  table.innerHTML = `<thead><tr><th>チケット名</th><th>金額</th></tr></thead><tbody></tbody>`;
-  const tbody = table.querySelector('tbody');
-  [TICKET_TYPE_TENT, TICKET_TYPE_PARKING].forEach((type) => {
-    const tr = tbody.insertRow();
-    tr.innerHTML = `<td>${type}</td><td><input type="number" class="${CLASSES.FORM_INPUT} ${CLASSES.FORM_INPUT_NUMERIC} ${CLASSES.TICKET_PRICE_INPUT}" data-ticket-type="${type}" value="0"><span class="${CLASSES.ERROR_MESSAGE_FIELD}"></span></td>`;
-  });
-  return table;
+function setupPricingDisplay(element) {
+  element.className = 'pricing-display';
+  element.innerHTML = `
+    <div class="pricing-display__item">
+      <span class="pricing-display__label">${TICKET_TYPE_TENT}</span>
+      <span class="pricing-display__value" data-ticket-type="${TICKET_TYPE_TENT}">8,000円</span>
+    </div>
+    <div class="pricing-display__item">
+      <span class="pricing-display__label">${TICKET_TYPE_PARKING}</span>
+      <span class="pricing-display__value" data-ticket-type="${TICKET_TYPE_PARKING}">6,000円</span>
+    </div>
+  `;
 }
 
 export function createGenericTableElement(id, headers) {
@@ -157,7 +173,7 @@ export function renderTables(state) {
     IDS.CALCULATION_ROW_TEMPLATE,
     participantInputValues,
     (clone, p) => {
-      clone.querySelector(`th`).textContent = p;
+      clone.querySelector('td:first-child').textContent = p;
     }
   );
 
@@ -312,7 +328,7 @@ function updateUIWithResults(results) {
     for (const p in calculationResults) {
       const result = calculationResults[p];
       const valueRow = document.querySelector(
-        `#${IDS.CALCULATION_TABLE} tr[data-participant="${p}"].calculation-table__value-row`
+        `#${IDS.CALCULATION_TABLE} tr[data-participant="${p}"]`
       );
       if (valueRow) {
         valueRow.querySelector(`.${CLASSES.TOTAL_PAYMENT}`).textContent =
@@ -470,6 +486,8 @@ function updateSummaryTable(results) {
   if (fragment.children.length > 0) {
     summaryTbody.appendChild(fragment);
   }
+
+  updatePaymentSummaryLists(calculationResults);
 }
 
 function updateBalanceCell(cell, balanceValue, returnHtml = false) {
@@ -493,4 +511,63 @@ function updateBalanceCell(cell, balanceValue, returnHtml = false) {
     cell.textContent = text;
     cell.className = className;
   }
+}
+
+function updatePaymentSummaryLists(calculationResults) {
+  const container = document.getElementById('payment-summary-lists');
+  if (!container) return;
+
+  if (!calculationResults || Object.keys(calculationResults).length === 0) {
+    container.innerHTML = '';
+    return;
+  }
+
+  const payers = [];
+  const receivers = [];
+
+  for (const participant in calculationResults) {
+    const result = calculationResults[participant];
+    const balance = Math.round(result.totalBalance || 0);
+
+    if (balance < 0) {
+      payers.push({ name: participant, amount: Math.abs(balance) });
+    } else if (balance > 0) {
+      receivers.push({ name: participant, amount: balance });
+    }
+  }
+
+  payers.sort((a, b) => b.amount - a.amount);
+  receivers.sort((a, b) => b.amount - a.amount);
+
+  let html = '<div class="payment-lists-container">';
+  
+  html += '<div class="payment-list payer-list">';
+  html += '<h3>払う人</h3>';
+  if (payers.length > 0) {
+    html += '<ul>';
+    payers.forEach(p => {
+      html += `<li><span class="participant-name">${p.name}</span> <span class="balance--negative">${formatNumberWithCommas(p.amount)}円</span></li>`;
+    });
+    html += '</ul>';
+  } else {
+    html += '<p>なし</p>';
+  }
+  html += '</div>';
+
+  html += '<div class="payment-list receiver-list">';
+  html += '<h3>貰う人</h3>';
+  if (receivers.length > 0) {
+    html += '<ul>';
+    receivers.forEach(p => {
+      html += `<li><span class="participant-name">${p.name}</span> <span class="balance--positive">${formatNumberWithCommas(p.amount)}円</span></li>`;
+    });
+    html += '</ul>';
+  } else {
+    html += '<p>なし</p>';
+  }
+  html += '</div>';
+
+  html += '</div>';
+
+  container.innerHTML = html;
 }

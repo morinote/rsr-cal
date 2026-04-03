@@ -40,17 +40,12 @@ export function renderApp(state) {
 // --- Rendering Logic (Driven by state) ---
 
 function updatePricingTableUI(ticketPrices) {
-  document
-    .querySelectorAll(`.${CLASSES.TICKET_PRICE_INPUT}`)
-    .forEach((input) => {
-      const type = input.dataset.ticketType;
-      if (
-        ticketPrices[type] !== undefined &&
-        document.activeElement !== input
-      ) {
-        input.value = ticketPrices[type];
-      }
-    });
+  document.querySelectorAll('.pricing-display__value').forEach((el) => {
+    const type = el.dataset.ticketType;
+    if (ticketPrices[type] !== undefined) {
+      el.textContent = `${ticketPrices[type].toLocaleString()}円`;
+    }
+  });
 }
 
 // --- Helper Functions ---
@@ -161,13 +156,35 @@ export function setupEventListeners() {
     }
   });
 
-  // Toggle wrap view for the summary table
-  const toggleBtn = document.getElementById(IDS.TOGGLE_SUMMARY_VIEW_BTN);
-  const summaryContainer = document.getElementById(IDS.SUMMARY_TABLE_CONTAINER);
-  if (toggleBtn && summaryContainer) {
-    toggleBtn.addEventListener('click', () => {
-      const isWrapped = summaryContainer.classList.toggle(CLASSES.TABLE_CONTAINER_WRAP);
-      toggleBtn.textContent = isWrapped ? '横スクロール表示に切り替え' : '折り返し表示に切り替え';
-    });
+  // テーマ切り替えの設定
+  setupThemeToggle();
+}
+
+function setupThemeToggle() {
+  const themeToggleBtn = document.getElementById('theme-toggle');
+  if (!themeToggleBtn) return;
+
+  const currentTheme = localStorage.getItem('theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+  if (currentTheme === 'dark' || (!currentTheme && prefersDark)) {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    themeToggleBtn.textContent = '☀️';
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+    themeToggleBtn.textContent = '🌙';
   }
+
+  themeToggleBtn.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (isDark) {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('theme', 'light');
+      themeToggleBtn.textContent = '🌙';
+    } else {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
+      themeToggleBtn.textContent = '☀️';
+    }
+  });
 }

@@ -165,7 +165,7 @@ export function loadData() {
       const parsedPrices = JSON.parse(savedTicketPrices);
       if (typeof parsedPrices === 'object' && parsedPrices !== null) {
         [TICKET_TYPE_TENT, TICKET_TYPE_PARKING].forEach((type) => {
-          parsedPrices[type] = parseFloat(parsedPrices[type]) || 0;
+          parsedPrices[type] = parseFloat(parsedPrices[type]);
         });
         ticketPrices = parsedPrices;
       }
@@ -173,6 +173,10 @@ export function loadData() {
       console.error('Error parsing ticketPrices from localStorage:', e);
     }
   }
+
+  // Ensure default prices are set
+  ticketPrices[TICKET_TYPE_TENT] = 6000;
+  ticketPrices[TICKET_TYPE_PARKING] = 8000;
 
   // 3. Load dynamicSections
   const savedDynamicSections = localStorage.getItem('dynamicSections');
