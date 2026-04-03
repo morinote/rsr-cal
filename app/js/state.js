@@ -87,18 +87,23 @@ export function subscribe(callback) {
 }
 
 export function loadData() {
-  // 0. Load participants list first
+  // 0. Load participants list and merge with INITIAL_PARTICIPANTS to respect new order
   const savedParticipants = localStorage.getItem('participants');
+  let loadedParticipants = [];
   if (savedParticipants) {
     try {
       const parsed = JSON.parse(savedParticipants);
       if (Array.isArray(parsed)) {
-        participants = parsed;
+        loadedParticipants = parsed;
       }
     } catch (e) {
       console.error('Error parsing participants from localStorage:', e);
     }
   }
+
+  // INITIAL_PARTICIPANTS の順序を維持しつつ、手動で追加されたメンバーを末尾に追加する
+  const manualParticipants = loadedParticipants.filter(p => !INITIAL_PARTICIPANTS.includes(p));
+  participants = [...INITIAL_PARTICIPANTS, ...manualParticipants];
 
   // 1. Load and validate participantInputValues
   const savedParticipantInputValues = localStorage.getItem(

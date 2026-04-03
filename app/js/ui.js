@@ -124,6 +124,36 @@ export function setupEventListeners() {
     true
   );
 
+  mainContent.addEventListener(
+    'focus',
+    (event) => {
+      const target = event.target;
+      if (target.matches(`input[type="number"].${CLASSES.FORM_INPUT}`)) {
+        // フォーカス時に数値を全選択して上書きしやすくする
+        target.select();
+      }
+    },
+    true
+  );
+
+  mainContent.addEventListener('keydown', (event) => {
+    const target = event.target;
+    if (
+      event.key === 'Enter' &&
+      target.matches(`input[type="number"].${CLASSES.FORM_INPUT}`)
+    ) {
+      // Enterキーで次の入力欄に移動する
+      const inputs = Array.from(
+        document.querySelectorAll(`input[type="number"].${CLASSES.FORM_INPUT}`)
+      );
+      const index = inputs.indexOf(target);
+      if (index !== -1 && index < inputs.length - 1) {
+        event.preventDefault();
+        inputs[index + 1].focus();
+      }
+    }
+  });
+
   mainContent.addEventListener('click', (event) => {
     const target = event.target;
     if (target.classList.contains(CLASSES.ADD_PARTICIPANT_GLOBAL_BTN)) {
