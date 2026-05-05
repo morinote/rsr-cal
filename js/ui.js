@@ -12,6 +12,7 @@ import { renderTables } from './components/table.js';
 import { renderParticipants } from './components/participant.js';
 import { renderDynamicSections } from './components/dynamicSection.js';
 import { calculateAndDispatch } from './calculation.js';
+import { saveElementAsImage } from './utils/image.js';
 
 // --- Main Render Function ---
 
@@ -183,6 +184,23 @@ export function setupEventListeners() {
           payload: { name },
         });
       }
+    }
+
+    if (target.classList.contains(CLASSES.SAVE_IMAGE_BTN)) {
+      const targetId = target.dataset.target;
+      const section = target.closest(`.${CLASSES.CONTENT_SECTION}`);
+      let fileName = 'table-image';
+
+      if (section) {
+        const titleEl = section.querySelector(`.${CLASSES.CONTENT_SECTION}__title`);
+        if (titleEl) {
+          // input要素（動的セクション）かテキストかを判定
+          const input = titleEl.querySelector('input');
+          fileName = input ? input.value : titleEl.textContent.trim();
+        }
+      }
+
+      saveElementAsImage(targetId, fileName);
     }
   });
 

@@ -83,6 +83,7 @@ export const CLASSES = {
 
   // Buttons
   DELETE_SECTION_BTN: 'btn--delete-section',
+  SAVE_IMAGE_BTN: 'btn--save-image',
 
   // Rows & Cells
   CALCULATION_HEADER_ROW: 'calculation-table__header-row',
