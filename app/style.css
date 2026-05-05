@@ -106,12 +106,26 @@ body {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
+.content-section__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 8px;
+}
+
 .content-section__title {
   font-size: 18px;
   color: var(--text-color-primary);
-  padding-bottom: 8px;
   border-bottom: 1px solid var(--border-color);
-  margin-top: 0;
+  padding-bottom: 8px;
+  margin: 0;
+}
+
+.content-section__header .content-section__title {
+  border-bottom: none;
+  padding-bottom: 0;
 }
 
 .pricing-display {
@@ -235,6 +249,27 @@ body {
 .btn--add-section:hover,
 .btn--add-section:focus {
   background-color: var(--secondary-color-hover);
+}
+
+.btn--save-image {
+  background-color: var(--text-color-secondary);
+  font-size: 13px;
+  padding: 6px 10px;
+  width: 50%;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.btn--save-image::before {
+  content: '📷';
+}
+
+.btn--save-image:hover,
+.btn--save-image:focus {
+  background-color: var(--text-color-primary);
 }
 
 .table-container {

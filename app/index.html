@@ -28,7 +28,10 @@
     </section>
 
     <section id="calculation-section" class="content-section">
-      <h2 class="content-section__title">チケット</h2>
+      <div class="content-section__header">
+        <h2 class="content-section__title">チケット</h2>
+        <button class="btn btn--save-image" data-target="calculation-section">画像保存</button>
+      </div>
       <div id="participants-list" class="participant-checklist"></div>
       <button class="btn add-participant-global-btn">参加者を追加</button>
       <p class="section-summary">
@@ -45,7 +48,10 @@
     </section>
 
     <section id="beer-server-section" class="content-section">
-      <h2 class="content-section__title">ビアサーバー</h2>
+      <div class="content-section__header">
+        <h2 class="content-section__title">ビアサーバー</h2>
+        <button class="btn btn--save-image" data-target="beer-server-section">画像保存</button>
+      </div>
       <div id="beer-server-participants-list" class="participant-checklist"></div>
       <button class="btn add-participant-global-btn">参加者を追加</button>
       <p class="section-summary">
@@ -58,7 +64,10 @@
     </section>
 
     <section id="food-section" class="content-section">
-      <h2 class="content-section__title">食材</h2>
+      <div class="content-section__header">
+        <h2 class="content-section__title">食材</h2>
+        <button class="btn btn--save-image" data-target="food-section">画像保存</button>
+      </div>
       <div id="food-participants-list" class="participant-checklist"></div>
       <button class="btn add-participant-global-btn">参加者を追加</button>
       <p class="section-summary">
@@ -75,7 +84,10 @@
     </button>
 
     <section id="summary-section" class="content-section">
-      <h2 class="content-section__title">総合収支</h2>
+      <div class="content-section__header">
+        <h2 class="content-section__title">総合収支</h2>
+        <button class="btn btn--save-image" data-target="summary-section">画像保存</button>
+      </div>
       <div class="table-container" id="summary-table-container">
         <!-- Summary table will be loaded here -->
       </div>
@@ -123,6 +135,7 @@
     </tr>
   </template>
 
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script type="module" src="js/main.js"></script>
 </body>
 

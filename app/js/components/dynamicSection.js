@@ -18,20 +18,21 @@ function createDynamicSectionElement(section) {
   sectionElement.dataset.sectionName = section.name;
 
   sectionElement.innerHTML = `
-        <h2 class="${CLASSES.CONTENT_SECTION}__title ${CLASSES.DYNAMIC_SECTION_HEADER}">
-            <input type="text" value="${section.name.replace(
-    SUFFIX_FEE,
-    ''
-  )}" readonly> 
-            <button class="btn ${CLASSES.DELETE_SECTION_BTN
-    }" data-section-id="${section.id}">削除</button>
-        </h2>
-        <div id="${section.id
-    }-participants-list" class="participant-checklist"></div>
-        <button class="btn ${CLASSES.ADD_PARTICIPANT_GLOBAL_BTN
-    }">参加者を追加</button>
-        <p class="section-summary">合計人数: <span class="participant-count" data-section="${section.id
-    }">0</span></p>
+        <div class="content-section__header">
+            <h2 class="${CLASSES.CONTENT_SECTION}__title ${CLASSES.DYNAMIC_SECTION_HEADER}">
+                <input type="text" value="${section.name.replace(
+                  SUFFIX_FEE,
+                  ''
+                )}" readonly> 
+            </h2>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <button class="btn ${CLASSES.SAVE_IMAGE_BTN}" data-target="${section.id}">画像保存</button>
+                <button class="btn ${CLASSES.DELETE_SECTION_BTN}" data-section-id="${section.id}">削除</button>
+            </div>
+        </div>
+        <div id="${section.id}-participants-list" class="participant-checklist"></div>
+        <button class="btn ${CLASSES.ADD_PARTICIPANT_GLOBAL_BTN}">参加者を追加</button>
+        <p class="section-summary">合計人数: <span class="participant-count" data-section="${section.id}">0</span></p>
         <div class="table-container" id="${section.id}-table-container"></div>
     `;
 
