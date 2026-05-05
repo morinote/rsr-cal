@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>割り勘計算機</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Noto+Sans+JP:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div id="error-message" class="error-message"></div>
+  <header class="main-header">
+    <h1 class="main-header__title">割り勘計算機</h1>
+    <button id="theme-toggle" aria-label="テーマ切り替え">
+      🌙
+    </button>
+  </header>
+  <main class="main-content">
+    <section id="pricing-section" class="content-section">
+      <h2 class="content-section__title">チケット料金</h2>
+      <div id="pricing-table">
+        <!-- Pricing display will be loaded here -->
+      </div>
+    </section>
+
+    <section id="calculation-section" class="content-section">
+      <h2 class="content-section__title">チケット</h2>
+      <div id="participants-list" class="participant-checklist"></div>
+      <button class="btn add-participant-global-btn">参加者を追加</button>
+      <p class="section-summary">
+        合計人数:
+        <span class="participant-count" data-section="ticket">0</span>
+      </p>
+      <div id="ticket-totals" class="ticket-totals">
+        <p>テント券 合計: <span id="total-tent-tickets">0</span></p>
+        <p>駐車券 合計: <span id="total-parking-tickets">0</span></p>
+      </div>
+      <div class="table-container" id="calculation-table-container">
+        <!-- Calculation table will be loaded here -->
+      </div>
+    </section>
+
+    <section id="beer-server-section" class="content-section">
+      <h2 class="content-section__title">ビアサーバー</h2>
+      <div id="beer-server-participants-list" class="participant-checklist"></div>
+      <button class="btn add-participant-global-btn">参加者を追加</button>
+      <p class="section-summary">
+        合計人数:
+        <span class="participant-count" data-section="beer-server">0</span>
+      </p>
+      <div class="table-container" id="beer-server-table-container">
+        <!-- Beer server table will be loaded here -->
+      </div>
+    </section>
+
+    <section id="food-section" class="content-section">
+      <h2 class="content-section__title">食材</h2>
+      <div id="food-participants-list" class="participant-checklist"></div>
+      <button class="btn add-participant-global-btn">参加者を追加</button>
+      <p class="section-summary">
+        合計人数: <span class="participant-count" data-section="food">0</span>
+      </p>
+      <div class="table-container" id="food-table-container">
+        <!-- Food table will be loaded here -->
+      </div>
+    </section>
+
+    <div id="dynamic-sections-container"></div>
+    <button id="add-new-table-section-btn" class="btn btn--add-section">
+      新しいテーブルを追加
+    </button>
+
+    <section id="summary-section" class="content-section">
+      <h2 class="content-section__title">総合収支</h2>
+      <div class="table-container" id="summary-table-container">
+        <!-- Summary table will be loaded here -->
+      </div>
+      <div id="payment-summary-lists"></div>
+    </section>
+  </main>
+
+  <!-- Templates -->
+  <template id="participant-template">
+    <label class="participant-checklist__label">
+      <input type="checkbox" class="participant-checklist__checkbox" />
+      <span class="participant-checklist__name"></span>
+    </label>
+  </template>
+
+  <template id="calculation-row-template">
+    <tr>
+      <td></td>
+      <td>
+        <input type="number" inputmode="numeric" class="form-input form-input--numeric ticket-quantity-input" data-ticket-type="テント券"
+          value="0" />
+      </td>
+      <td>
+        <input type="number" inputmode="numeric" class="form-input form-input--numeric ticket-quantity-input" data-ticket-type="駐車券"
+          value="0" />
+      </td>
+      <td>
+        <input type="number" inputmode="numeric" class="form-input form-input--numeric fee-input" value="0" />
+      </td>
+      <td class="total-payment">0</td>
+      <td class="per-person-payment">0</td>
+      <td class="balance">0</td>
+    </tr>
+  </template>
+
+  <template id="standard-row-template">
+    <tr>
+      <td></td>
+      <td>
+        <input type="number" inputmode="numeric" class="form-input form-input--numeric" value="0" />
+      </td>
+      <td class="total-payment">0</td>
+      <td class="per-person-payment">0</td>
+      <td class="balance">0</td>
+    </tr>
+  </template>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+
+</html>
