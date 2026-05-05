@@ -5,3 +5,11 @@ node_modules/
 dist/
 build/
 .env
+
+# Development config files to keep local only
+.babelrc
+.prettierignore
+.prettierrc.json
+eslint.config.js
+package.json
+package-lock.json
