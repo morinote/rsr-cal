@@ -115,6 +115,17 @@ export function createGenericTableElement(id, headers) {
     headerRow.appendChild(th);
   });
   table.createTBody();
+
+  // 総合収支以外のテーブルにフッターを追加
+  if (headers.length > 0 && id !== IDS.SUMMARY_TABLE) {
+    const tfoot = table.createTFoot();
+    const footerRow = tfoot.insertRow();
+    headers.forEach(() => {
+      const td = document.createElement('td');
+      footerRow.appendChild(td);
+    });
+  }
+
   return table;
 }
 
@@ -316,6 +327,9 @@ function updateRowValues(row, participant, participantInputValues) {
 function updateUIWithResults(results) {
   const {
     calculationResults,
+    totalExpense,
+    totalBeerServerExpense,
+    totalFoodExpense,
     perPersonExpense,
     perPersonBeerServerExpense,
     perPersonFoodExpense,
@@ -341,6 +355,14 @@ function updateUIWithResults(results) {
         );
       }
     }
+
+    // チケットテーブルのフッター更新
+    const selectedCount = Object.keys(calculationResults).filter(p => calculationResults[p].totalPayment > 0 || calculationResults[p].balance !== 0).length;
+    // note: selectedParticipants.length might be better, but we don't have it directly here.
+    // Actually calculationResults only contains participants in ANY table.
+    // Let's use the rows in the table to count.
+    const ticketRows = document.querySelectorAll(`#${IDS.CALCULATION_TABLE} tbody tr[data-participant]`);
+    updateTableFooter(IDS.CALCULATION_TABLE, ticketRows.length, totalExpense);
   }
 
   const totalTentTicketsElement = document.getElementById(
@@ -362,14 +384,16 @@ function updateUIWithResults(results) {
     calculationResults,
     perPersonBeerServerExpense,
     'beerBalance',
-    'beerServerPayment'
+    'beerServerPayment',
+    totalBeerServerExpense
   );
   updateStandardTableUI(
     `#${IDS.FOOD_TABLE}`,
     calculationResults,
     perPersonFoodExpense,
     'foodBalance',
-    'foodPayment'
+    'foodPayment',
+    totalFoodExpense
   );
 
   if (dynamicSectionTotals) {
@@ -380,12 +404,14 @@ function updateUIWithResults(results) {
       if (section) {
         const table = section.querySelector('table');
         const perPerson = dynamicSectionTotals[sectionName].perPerson;
+        const total = dynamicSectionTotals[sectionName].total;
         updateStandardTableUI(
           `#${table.id}`,
           calculationResults,
           perPerson,
           `${sectionName}_balance`,
-          `${sectionName}_payment`
+          `${sectionName}_payment`,
+          total
         );
       }
     }
@@ -397,7 +423,8 @@ function updateStandardTableUI(
   results,
   perPerson,
   balanceKey,
-  paymentKey
+  paymentKey,
+  totalAmount
 ) {
   const table = document.querySelector(tableSelector);
   if (!table) return;
@@ -422,6 +449,12 @@ function updateStandardTableUI(
       if (balanceCell) updateBalanceCell(balanceCell, results[p][balanceKey]);
     }
   });
+
+  // フッターの更新
+  if (table) {
+    const rows = table.querySelectorAll('tbody tr[data-participant]');
+    updateTableFooter(table.id, rows.length, totalAmount);
+  }
 }
 
 function updateSummaryTable(results) {
@@ -522,9 +555,35 @@ function updateBalanceCell(cell, balanceValue, returnHtml = false, isFinal = fal
 
   if (returnHtml) return `<span class="${className}">${text}</span>`;
 
-  if (cell) {
+    if (cell) {
     cell.textContent = text;
     cell.className = className;
+  }
+}
+
+function updateTableFooter(tableId, count, totalAmount) {
+  const table = document.getElementById(tableId);
+  if (!table) return;
+
+  const tfoot = table.querySelector('tfoot');
+  if (!tfoot) return;
+
+  const row = tfoot.rows[0];
+  if (!row) return;
+
+  // HEADER_TOTAL_PAYMENT のインデックスを探す
+  const thead = table.querySelector('thead');
+  const headers = Array.from(thead.rows[0].cells).map((cell) => cell.textContent);
+  const totalPaymentIndex = headers.indexOf(HEADER_TOTAL_PAYMENT);
+
+  // 参加人数を最初のセルにセット
+  row.cells[0].innerHTML = `合計: <strong>${count}名</strong>`;
+
+  // 支払合計を対応するセルにセット
+  if (totalPaymentIndex !== -1) {
+    row.cells[totalPaymentIndex].innerHTML = `<strong>${formatNumberWithCommas(
+      totalAmount || 0
+    )}</strong>`;
   }
 }
 

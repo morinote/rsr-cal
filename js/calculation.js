@@ -237,6 +237,9 @@ export function performCalculations(inputs) {
 
     return {
       calculationResults,
+      totalExpense,
+      totalBeerServerExpense,
+      totalFoodExpense,
       perPersonExpense,
       perPersonBeerServerExpense,
       perPersonFoodExpense,

@@ -353,6 +353,13 @@ body {
   border-bottom: none;
 }
 
+.data-table tfoot td {
+  background-color: var(--table-header-bg);
+  font-weight: bold;
+  border-top: 2px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
 .form-input {
   padding: 10px 12px;
   font-size: 16px;
