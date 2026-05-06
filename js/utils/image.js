@@ -80,6 +80,21 @@ export async function saveElementAsImage(elementId, fileName) {
               el.style.position = 'static';
             }
           });
+
+          // Force payment lists to be side-by-side in the image
+          const paymentListsContainer = clonedElement.querySelector('.payment-lists-container');
+          if (paymentListsContainer) {
+            paymentListsContainer.style.display = 'flex';
+            paymentListsContainer.style.flexWrap = 'nowrap';
+            paymentListsContainer.style.width = 'fit-content';
+            paymentListsContainer.style.gap = '16px';
+
+            const paymentLists = paymentListsContainer.querySelectorAll('.payment-list');
+            paymentLists.forEach(list => {
+              list.style.flex = '1';
+              list.style.minWidth = '300px'; // Ensure each list has a reasonable minimum width
+            });
+          }
         }
       }
     });
